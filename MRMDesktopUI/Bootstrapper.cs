@@ -1,11 +1,13 @@
 ﻿using Caliburn.Micro;
+using MRMDesktopUI.Helpers;
 using MRMDesktopUI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
+using System.Windows;  
+using System.Windows.Controls;
 
 namespace MRMDesktopUI
 {
@@ -15,6 +17,11 @@ namespace MRMDesktopUI
         public Bootstrapper()
         {
             Initialize();
+
+            ConventionManager.AddElementConvention<PasswordBox>(
+                PasswordBoxHelper.BoundPasswordProperty,
+                "Password",
+                "PasswordChanged");
         }
 
         //override one of the methods in Bootstrapper Base
@@ -24,7 +31,8 @@ namespace MRMDesktopUI
 
             _container
                 .Singleton<IWindowManager, WindowManager>()
-                .Singleton<IEventAggregator, EventAggregator>();
+                .Singleton<IEventAggregator, EventAggregator>()
+                .Singleton<IAPIHelper, APIHelper>();
 
             GetType().Assembly.GetTypes()
                 .Where(type => type.IsClass)
