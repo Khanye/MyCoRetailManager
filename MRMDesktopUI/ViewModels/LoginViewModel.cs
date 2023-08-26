@@ -3,6 +3,7 @@ using MRMDesktopUI.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,6 +43,36 @@ namespace MRMDesktopUI.ViewModels
 			}
 		}
 
+
+		public bool IsErrorVisible
+		{
+			get 
+			{ 
+				bool output = false;
+
+                if (ErrorMessage?.Length>0)
+                {
+					output = true;
+                }
+                return output;
+			}
+
+        }     
+
+		private string _errorMessage;
+
+		public string ErrorMessage
+        {
+			get { return _errorMessage; }
+			set
+			{
+				_errorMessage = value;
+                NotifyOfPropertyChange(() => IsErrorVisible);
+                NotifyOfPropertyChange(() => ErrorMessage);
+            }
+        }
+
+
 		public bool CanLogIn
 		{
 			get
@@ -56,9 +87,19 @@ namespace MRMDesktopUI.ViewModels
 			}
 		}
 
-		public async Task LogIn()
+        public string ErrorMessage1 { get => _errorMessage; set => _errorMessage = value; }
+
+        public async Task LogIn()
 		{
-			var result = await _apiHelper.Authenticate(UserName, Password);
+			try
+			{
+				ErrorMessage = "";
+				var result = await _apiHelper.Authenticate(UserName, Password);
+			}
+			catch (Exception ex)
+			{
+				ErrorMessage = ex.Message;
+			}
 		}
 	}
 }
