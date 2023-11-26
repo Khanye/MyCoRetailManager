@@ -14,12 +14,12 @@ namespace MRMDataManager.Controllers
     {
         [Authorize]       
         // GET: api/User/5
-        public List<UserModel> GetById()
+        public UserModel GetById()
         {
             string userid = RequestContext.Principal.Identity.GetUserId();
             UserData data = new UserData();
 
-            return data.GetUserById (userid);           
+            return data.GetUserById (userid).First();           
         }
 
     }

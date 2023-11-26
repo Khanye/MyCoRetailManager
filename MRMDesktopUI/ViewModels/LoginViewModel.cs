@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using MRMDesktopUI.Helpers;
+using MRMDesktopUI.Library.Api;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,8 @@ namespace MRMDesktopUI.ViewModels
     public class LoginViewModel : Screen
     {
 		
-		private string _userName;
-		private string _password;
+		private string _userName = "khanyeinc@outlook.com";
+		private string _password = "@sky.Fly!23";
 		private IAPIHelper _apiHelper;
 
         public LoginViewModel(IAPIHelper apiHelper)
@@ -95,8 +96,11 @@ namespace MRMDesktopUI.ViewModels
 			{
 				ErrorMessage = "";
 				var result = await _apiHelper.Authenticate(UserName, Password);
+
+				//Capture more information about the user and put it somewhere
+				await _apiHelper.GetLoggedInUserInfo(result.Access_Token);
 			}
-			catch (Exception ex)
+				catch (Exception ex)
 			{
 				ErrorMessage = ex.Message;
 			}

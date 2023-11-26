@@ -11,14 +11,14 @@ using System.Threading.Tasks;
 
 namespace MRMDataManager.Library.Internal.DataAccess
 {
+    // Internal so that it cant be seen by anything outside the Library. Nothing outside thelibrary should be talking to the 
+    //database but has to go through the SQLDataAccess class
     internal class SqlDataAccess
     {   // Method to get the connection string : Pass in the name of the connection and return a connection string
         public string GetConnectionString(string name)
         {
             return ConfigurationManager.ConnectionStrings[name].ConnectionString;
         }
-
-
 
         public List<T> LoadData<T, U>(string storedProcedure, U parameters, string connectionStringName)
         {
@@ -48,3 +48,4 @@ namespace MRMDataManager.Library.Internal.DataAccess
 
 
 }
+ 
