@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using MRMDesktopUI.EventModels;
 using MRMDesktopUI.Helpers;
 using MRMDesktopUI.Library.Api;
 using System;
@@ -16,10 +17,12 @@ namespace MRMDesktopUI.ViewModels
 		private string _userName = "khanyeinc@outlook.com";
 		private string _password = "@sky.Fly!23";
 		private IAPIHelper _apiHelper;
+		private IEventAggregator _events;
 
-        public LoginViewModel(IAPIHelper apiHelper)
+        public LoginViewModel(IAPIHelper apiHelper,IEventAggregator events)
         {
-				_apiHelper = apiHelper;
+			_apiHelper = apiHelper;
+			_events = events;
         }
         public string UserName
 		{
@@ -99,6 +102,8 @@ namespace MRMDesktopUI.ViewModels
 
 				//Capture more information about the user and put it somewhere
 				await _apiHelper.GetLoggedInUserInfo(result.Access_Token);
+
+				_events.PublishOnUIThread(new LogOnEvent());
 			}
 				catch (Exception ex)
 			{
