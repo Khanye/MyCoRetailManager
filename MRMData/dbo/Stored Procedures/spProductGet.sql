@@ -3,7 +3,7 @@ AS
 begin
       set nocount on;
 
-	  select Id, PrdctTitle, Description ,RetailPrice, QuantityInStock
+	  select Id, PrdctTitle, Description ,RetailPrice, QuantityInStock,IsTaxable
 	  from dbo.Product
 	  order by PrdctTitle
 

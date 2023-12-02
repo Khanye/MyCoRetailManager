@@ -1,6 +1,7 @@
 ﻿using Caliburn.Micro;
 using MRMDesktopUI.Helpers;
 using MRMDesktopUI.Library.Api;
+using MRMDesktopUI.Library.Helpers;
 using MRMDesktopUI.Library.Models;
 using MRMDesktopUI.ViewModels;
 using System;
@@ -37,6 +38,8 @@ namespace MRMDesktopUI
                 .Singleton<IEventAggregator, EventAggregator>()
                 //.Singleton<LoggedInUserModel>()
                 .Singleton<ILoggedInUserModel, LoggedInUserModel>()
+
+                .Singleton<IConfigHelper, ConfigHelper>()
                 .Singleton<IAPIHelper, APIHelper>();
 
             GetType().Assembly.GetTypes()
