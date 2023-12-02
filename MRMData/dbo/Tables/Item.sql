@@ -1,7 +1,7 @@
-﻿CREATE TABLE [dbo].[Product]
+﻿CREATE TABLE [dbo].[Item]
 (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY, 
-    [PrdctTitle] NVARCHAR(300) NOT NULL, 
+    [Prod_title ] NVARCHAR(MAX) NOT NULL, 
     [Description] NVARCHAR(MAX) NOT NULL, 
     [RetailPrice] MONEY NOT NULL, 
     [QuantityInStock] INT NOT NULL DEFAULT 1, 

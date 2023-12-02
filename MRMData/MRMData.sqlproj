@@ -69,10 +69,13 @@
     <Build Include="dbo\Tables\User.sql" />
     <Build Include="dbo\Tables\Sale.sql" />
     <Build Include="dbo\Tables\SaleDetail.sql" />
-    <Build Include="dbo\Tables\Product.sql" />
     <Build Include="dbo\Tables\Inventory.sql" />
     <Build Include="dbo\Stored Procedures\spUserLookUp.sql" />
     <Build Include="dbo\Stored Procedures\spUserTableLookup.sql" />
+    <Build Include="dbo\Stored Procedures\spProductsDisplayAll.sql" />
+    <Build Include="dbo\Tables\Item.sql" />
+    <Build Include="dbo\Tables\Product.sql" />
+    <Build Include="dbo\Stored Procedures\spProductGet.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="MRMData.refactorlog" />
