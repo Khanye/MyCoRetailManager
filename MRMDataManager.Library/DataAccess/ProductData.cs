@@ -19,5 +19,14 @@ namespace MRMDataManager.Library.DataAccess
 
             return output;
         }
+
+        public ProductModel GetProductById(int productid)
+        {
+            SqlDataAccess sql = new SqlDataAccess();
+
+            var output = sql.LoadData<ProductModel, dynamic>("dbo.spProductGetById", new {Id = productid }, "MRMData").FirstOrDefault();
+
+            return output;
+        }
     }
 }
