@@ -3,9 +3,9 @@ AS
 begin
       set nocount on;
 
-	  select Id, [Prod_title ] ,[Description], RetailPrice,QuantityInStock
+	  select Id, Prod_title,[Description], RetailPrice,QuantityInStock
 	  from dbo.Item
-	  order by [Prod_title ]
+	  order by Prod_title;
 
 end
  
