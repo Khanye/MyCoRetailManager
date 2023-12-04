@@ -1,7 +1,9 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using MRMDesktopUI.Library.Api;
 using MRMDesktopUI.Library.Helpers;
 using MRMDesktopUI.Library.Models;
+using MRMDesktopUI.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,15 +18,21 @@ namespace MRMDesktopUI.ViewModels
         private IProductEndpoint _productEndpoint;
         private IConfigHelper _configHelper;
         private ISaleEndpoint _saleEndpoint;
-        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndpoint saleEndpoint)
+        private IMapper _mapper;
+        public SalesViewModel(
+            IProductEndpoint productEndpoint, 
+            IConfigHelper configHelper, 
+            ISaleEndpoint saleEndpoint,
+            IMapper mapper)
         {
             _productEndpoint = productEndpoint;
             _configHelper = configHelper;
             _saleEndpoint = saleEndpoint;
+            _mapper = mapper;
             // Couldnt work constructor does return anything, no return type so we cant make it asynchronous 
 
             //var productList = _productEndpoint.GetAll();
-            //Products = new BindingList<ProductModel>(_productEndpoint.GetAll);
+            //Products = new BindingList<ProductDisplayModel>(_productEndpoint.GetAll);
         }
 
         // overide onViewLOadedd to call LoadProducts
@@ -36,25 +44,26 @@ namespace MRMDesktopUI.ViewModels
         public async Task LoadProducts()
         {
             var productList = await _productEndpoint.GetAll();
-            Products = new BindingList<ProductModel>(productList);
+
+            var pro = _mapper.Map<List<ProductDisplayModel>>(productList);
+            Products = new BindingList<ProductDisplayModel>(pro);
         }
 
-        private BindingList<ProductModel> _products;
+        private BindingList<ProductDisplayModel> _products;
 
-		public BindingList<ProductModel> Products
+		public BindingList<ProductDisplayModel> Products
 		{
 			get { return _products; }
 			set 
 			{
 				_products = value;
 				NotifyOfPropertyChange(() => Products);
-
             }
 		}
 
-        private ProductModel _selectedProduct;
+        private ProductDisplayModel _selectedProduct;
 
-        public ProductModel SelectedProduct
+        public ProductDisplayModel SelectedProduct
         {
             get { return _selectedProduct; }
             set 
@@ -66,9 +75,9 @@ namespace MRMDesktopUI.ViewModels
         }
 
 
-        private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
+        private BindingList<CartItemDisplayModel> _cart = new BindingList<CartItemDisplayModel>();
 
-        public BindingList<CartItemModel> Cart
+        public BindingList<CartItemDisplayModel> Cart
         {
             get { return _cart; }
             set
@@ -167,17 +176,18 @@ namespace MRMDesktopUI.ViewModels
         }
         public void AddToCart()
 		{
-            CartItemModel existingItem = Cart.FirstOrDefault(x => x.Product == SelectedProduct);
+            CartItemDisplayModel existingItem = Cart.FirstOrDefault(x => x.Product == SelectedProduct);
 
             if (existingItem != null)
             {
                 existingItem.QuantityInCart += ItemQuantity;
-                Cart.Remove(existingItem);
-                Cart.Add(existingItem);
+                ////This is a Hack improve it
+                //Cart.Remove(existingItem);
+                //Cart.Add(existingItem);
             }
             else
             {
-                CartItemModel model = new CartItemModel
+                CartItemDisplayModel model = new CartItemDisplayModel
                 {
                     Product = SelectedProduct,
                     QuantityInCart = ItemQuantity
