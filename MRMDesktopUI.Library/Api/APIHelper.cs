@@ -66,6 +66,11 @@ namespace MRMDesktopUI.Library.Api
 
         }
 
+        public void LogOffUser()
+        {
+            _apiClient.DefaultRequestHeaders.Clear();
+        }
+
         // Save our Token information for future calls to the API by modifying our apiClient
         public async Task GetLoggedInUserInfo(string token)
         { 
