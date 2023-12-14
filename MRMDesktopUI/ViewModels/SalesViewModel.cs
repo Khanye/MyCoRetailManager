@@ -49,8 +49,8 @@ namespace MRMDesktopUI.ViewModels
             Products = new BindingList<ProductDisplayModel>(pro);
         }
 
-        private BindingList<ProductDisplayModel> _products;
 
+        private BindingList<ProductDisplayModel> _products;
 		public BindingList<ProductDisplayModel> Products
 		{
 			get { return _products; }
@@ -61,8 +61,8 @@ namespace MRMDesktopUI.ViewModels
             }
 		}
 
-        private ProductDisplayModel _selectedProduct;
 
+        private ProductDisplayModel _selectedProduct;
         public ProductDisplayModel SelectedProduct
         {
             get { return _selectedProduct; }
@@ -75,8 +75,18 @@ namespace MRMDesktopUI.ViewModels
         }
 
 
-        private BindingList<CartItemDisplayModel> _cart = new BindingList<CartItemDisplayModel>();
+        private async Task ResetSalesViewModel()
+        {
+            Cart = new BindingList<CartItemDisplayModel>();
+            //TODO - Clear out SelectedCartItem if its not clearin on its own
+            await LoadProducts();
+            NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckOut);
+        }     
 
+        private BindingList<CartItemDisplayModel> _cart = new BindingList<CartItemDisplayModel>();
         public BindingList<CartItemDisplayModel> Cart
         {
             get { return _cart; }
@@ -89,8 +99,20 @@ namespace MRMDesktopUI.ViewModels
         }
 
 
-        private int _itemQuantity = 1;
+        private CartItemDisplayModel _selectedCartItem;
+        public CartItemDisplayModel SelectedCartItem
+        {
+            get { return _selectedCartItem; }
+            set
+            {
+                _selectedCartItem = value;
+                NotifyOfPropertyChange(() => SelectedCartItem);
+                NotifyOfPropertyChange(() => CanRemoveFromCart);
+            }
+        }
 
+
+        private int _itemQuantity = 1;
 		public int ItemQuantity 
 		{
 			get { return _itemQuantity; }
@@ -102,7 +124,7 @@ namespace MRMDesktopUI.ViewModels
             }
 		}
 
-       public string SubTotal
+        public string SubTotal
         {
             get 
             {
@@ -110,7 +132,6 @@ namespace MRMDesktopUI.ViewModels
                 return CalcSubTotal().ToString("C");
             }
        }
-
         private decimal CalcSubTotal()
         {
             decimal subTotal = 0;
@@ -121,7 +142,6 @@ namespace MRMDesktopUI.ViewModels
             }
             return subTotal;
         }
-
         public string Tax
         {
             get
@@ -130,7 +150,6 @@ namespace MRMDesktopUI.ViewModels
                 return CalculateTax().ToString("C");
             }
         }
-
         private decimal CalculateTax()
         {
             decimal taxAmount = 0;
@@ -159,7 +178,6 @@ namespace MRMDesktopUI.ViewModels
                 return total.ToString("C");
             }
         }
-
         public bool CanAddToCart
         {
             get
@@ -202,24 +220,38 @@ namespace MRMDesktopUI.ViewModels
             NotifyOfPropertyChange(() => Cart);
             NotifyOfPropertyChange(() => CanCheckOut);
         }
-
         public bool CanRemoveFromCart
         {
             get
             {
                 bool output = false;
                 //Make sure something is selected 
+                if (SelectedCartItem != null && SelectedCartItem?.QuantityInCart > 0)
+                {
+                    output = true;
+                }
                 return output;
             }
         }
         public void RemoveFromCart()
         {
+            if (SelectedCartItem.QuantityInCart > 1)
+            {
+                SelectedCartItem.QuantityInCart -= 1;
+                SelectedCartItem.Product.QuantityInStock += 1;
+            }
+            else
+            {
+                SelectedCartItem.Product.QuantityInStock += 1;
+                Cart.Remove(SelectedCartItem);
+            }
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => Cart);
             NotifyOfPropertyChange(() => CanCheckOut);
+            NotifyOfPropertyChange(() => CanAddToCart);
         }
-
         public bool CanCheckOut
         {
             get
@@ -248,6 +280,8 @@ namespace MRMDesktopUI.ViewModels
             }
 
             await _saleEndpoint.PostSale(sale);
+
+            await ResetSalesViewModel();
         }
 
     }

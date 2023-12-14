@@ -20,7 +20,7 @@ namespace MRMDesktopUI.Models
                 _quantityInCart = value;
                 //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(QuantityInCart)));
                 CallPropertyChanged(nameof(QuantityInCart));
-                CallPropertyChanged(DisplayText);
+                CallPropertyChanged(nameof(DisplayText));
             }
         }
         public string DisplayText

@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MRMDesktopUI.Views"
         mc:Ignorable="d"
-        Title="ShellView" Height="600" Width="1000">
+        Title="ShellView" Height="600" Width="800" WindowStartupLocation="CenterScreen">
     <DockPanel>
         <Menu DockPanel.Dock="Top" FontSize="18">
             <MenuItem Header="_File">
-                
-            </MenuItem> 
-            <MenuItem Header="_Account">
-                <MenuItem x:Name ="LoginScreen" Header="_Login"/> 
+                <MenuItem x:Name ="ExitApplication" Header="E_xit"/>
+            </MenuItem>
+            <MenuItem Header="_Account" Visibility="{Binding IsLoggedIn,Converter={StaticResource BooleanToVisibilityConverter},FallbackValue=Collapsed}">
+                <MenuItem x:Name ="LogOut" Header="_Log Out"/> 
             </MenuItem>
         </Menu>
         <Grid>
