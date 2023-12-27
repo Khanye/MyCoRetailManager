@@ -8,12 +8,13 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;                                                                                                                             
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace MRMDataManager.Library.Internal.DataAccess
 {
     // Internal so that it cant be seen by anything outside the Library. Nothing outside thelibrary should be talking to the 
     //database but has to go through the SQLDataAccess class
-    internal class SqlDataAccess
+    internal class SqlDataAccess : IDisposable
     {   // Method to get the connection string : Pass in the name of the connection and return a connection string
         public string GetConnectionString(string name)
         {
@@ -44,8 +45,63 @@ namespace MRMDataManager.Library.Internal.DataAccess
             }
         }
 
-    }
+        // TRANSACTION MAP
+        // Open connect/start transaction method
+        // Load using the transaction
+        // Save using the transaction
+        // Close connection/stop/end transaction method
+        // Dispose
 
+        private IDbConnection _connection;
+        private IDbTransaction _transaction;
+
+        // Open connect/start transaction method
+        public void StartTransaction(string connectionStringName)
+        {
+            string connectionString = GetConnectionString(connectionStringName);
+
+            _connection = new SqlConnection(connectionString);
+            _connection.Open(); 
+
+            _transaction = _connection.BeginTransaction(); 
+        }
+
+        // Save using the transaction
+        public void SaveDataInTransaction<T>(string storedProcedure, T parameters)
+        {
+            _connection.Execute(storedProcedure, parameters,
+                     commandType: CommandType.StoredProcedure, transaction: _transaction);
+            
+        }
+
+        // Load using the transaction
+        public List<T> LoadDataInTransaction<T, U>(string storedProcedure, U parameters)
+        {
+           List<T> rows = _connection.Query<T>(storedProcedure, parameters,
+                   commandType: CommandType.StoredProcedure, transaction: _transaction).ToList();
+
+           return rows;
+            
+        }
+
+        // Close connection/stop/end transaction method
+        public void CommitTransaction()
+        {
+            _transaction?.Commit();
+            _connection?.Close();
+        }
+        public void RollbackTransaction()
+        {
+            _transaction?.Rollback();
+            _connection?.Close();
+        }
+
+        // Dispose
+        public void Dispose()
+        {
+            CommitTransaction();
+        }
+    }
 
 }
  
