@@ -64,6 +64,8 @@ namespace MRMDataManager.Library.Internal.DataAccess
             _connection.Open(); 
 
             _transaction = _connection.BeginTransaction(); 
+
+            isClosed = false;
         }
 
         // Save using the transaction
@@ -84,22 +86,41 @@ namespace MRMDataManager.Library.Internal.DataAccess
             
         }
 
+        private bool isClosed = false;
+
         // Close connection/stop/end transaction method
         public void CommitTransaction()
         {
             _transaction?.Commit();
             _connection?.Close();
+
+            isClosed = true;
         }
         public void RollbackTransaction()
         {
             _transaction?.Rollback();
             _connection?.Close();
+
+            isClosed = true;
         }
 
         // Dispose
         public void Dispose()
         {
-            CommitTransaction();
+            if (isClosed == false)
+            {
+                try
+                {
+                    CommitTransaction();
+                }
+                catch
+                {
+                    //TODO: Log this issue 
+                }
+            }
+
+            _transaction  = null;
+            _connection = null ;
         }
     }
 
