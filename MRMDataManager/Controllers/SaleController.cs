@@ -21,5 +21,15 @@ namespace MRMDataManager.Controllers
 
             data.SaveSale(sale, userid);
         }
+
+
+        [Route ("GetSalesReport")]
+        public List<SaleReportModel> GetSaleReports()
+        {
+            SaleData data = new SaleData();
+
+            return data.GetSaleReport();
+
+        }
     }
 }
