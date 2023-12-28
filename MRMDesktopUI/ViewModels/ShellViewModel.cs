@@ -42,7 +42,10 @@ namespace MRMDesktopUI.ViewModels
 
         }
 
-
+        public void UsersManagement()
+        {
+            ActivateItem(IoC.Get<UserDisplayViewModel>());
+        }
         public void LogOut()
         {
             _user.ResetUserModel();
