@@ -7,9 +7,12 @@ using MRMDesktopUI.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Dynamic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MRMDesktopUI.ViewModels
 {
@@ -19,16 +22,23 @@ namespace MRMDesktopUI.ViewModels
         private IConfigHelper _configHelper;
         private ISaleEndpoint _saleEndpoint;
         private IMapper _mapper;
+        private StatusInfoViewModel _status;
+        private readonly IWindowManager _window;
+
         public SalesViewModel(
             IProductEndpoint productEndpoint, 
             IConfigHelper configHelper, 
             ISaleEndpoint saleEndpoint,
-            IMapper mapper)
+            IMapper mapper,
+            StatusInfoViewModel status,
+            IWindowManager window)
         {
             _productEndpoint = productEndpoint;
             _configHelper = configHelper;
             _saleEndpoint = saleEndpoint;
             _mapper = mapper;
+            _status = status;
+            _window = window;
             // Couldnt work constructor does return anything, no return type so we cant make it asynchronous 
 
             //var productList = _productEndpoint.GetAll();
@@ -39,7 +49,21 @@ namespace MRMDesktopUI.ViewModels
         protected override async void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
-            await LoadProducts();
+            try
+            {
+                await LoadProducts();
+            }
+            catch (Exception ex)
+            {
+                dynamic settings = new ExpandoObject();
+                settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                settings.ResizeMode = ResizeMode.NoResize;
+                settings.Title = "System Error";
+
+                _status.UpdateMessage("Unauthorized Access", "You do not have the permission to interact with the Sales Form. Please contact the Administrator");
+                _window.ShowDialog(_status,null ,settings);
+                TryClose();
+            }
         }
         public async Task LoadProducts()
         {
