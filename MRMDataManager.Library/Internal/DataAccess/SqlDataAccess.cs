@@ -1,8 +1,9 @@
 ﻿
 using Dapper;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
+
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -15,10 +16,16 @@ namespace MRMDataManager.Library.Internal.DataAccess
     // Internal so that it cant be seen by anything outside the Library. Nothing outside thelibrary should be talking to the 
     //database but has to go through the SQLDataAccess class
     internal class SqlDataAccess : IDisposable
-    {   // Method to get the connection string : Pass in the name of the connection and return a connection string
+    {
+        private IConfiguration _config;
+        public SqlDataAccess(IConfiguration config)
+        {
+            _config = config;  
+        }
+        // Method to get the connection string : Pass in the name of the connection and return a connection string
         public string GetConnectionString(string name)
         {
-            return ConfigurationManager.ConnectionStrings[name].ConnectionString;
+           return _config.GetConnectionString(name);
         }
 
         public List<T> LoadData<T, U>(string storedProcedure, U parameters, string connectionStringName)
