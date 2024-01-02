@@ -13,7 +13,7 @@ namespace MRMApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class UserController : ControllerBase
     {
         private readonly  ApplicationDbContext _context;
@@ -37,7 +37,7 @@ namespace MRMApi.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        [Route("api/User/Admin/GetAllUsers")]
+        [Route(" Admin/GetAllUsers")]
         public List<ApplicationUserModel> GetAllUsers()
         {
             List<ApplicationUserModel> output = new List<ApplicationUserModel>();
@@ -69,7 +69,7 @@ namespace MRMApi.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        [Route("api/User/Admin/GetAllRoles")]
+        [Route("Admin/GetAllRoles")]
         public Dictionary<string, string> GetAllRoles()
         {
             var roles = _context.Roles.ToDictionary(x => x.Id, x => x.Name);
@@ -78,7 +78,7 @@ namespace MRMApi.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        [Route("api/User/Admin/AddRole")]
+        [Route("Admin/AddRole")]
         public async Task AddARole(UserRolePairModel pairing)
         {
             var user = await _userManager.FindByIdAsync(pairing.UserId);
@@ -87,7 +87,7 @@ namespace MRMApi.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        [Route("api/User/Admin/RemoveRole")]
+        [Route("Admin/RemoveRole")]
         public async Task RemoveARole(UserRolePairModel pairing)
         {
             var user = await _userManager.FindByIdAsync(pairing.UserId);

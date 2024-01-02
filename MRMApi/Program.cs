@@ -1,6 +1,10 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using MRMApi.Data;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +18,33 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = "JwtBearer";
+    options.DefaultChallengeScheme = "JwtBearer";
+})
+    .AddJwtBearer("JwtBearer", jwtBearerOptions =>
+    {
+        jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MySecretKeyIsSecretSoDoNotTellPleaseDoNot")),
+            ValidateIssuer  = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(5)
+        };
+    });
+builder.Services.AddSwaggerGen(setup =>
+{
+    setup.SwaggerDoc(
+        "v1",
+        new OpenApiInfo
+        {
+            Title = "My Retail Manager API",
+            Version = "v1",
+        });
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -37,6 +67,11 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseSwagger();
+app.UseSwaggerUI(x =>
+{
+    x.SwaggerEndpoint("/swagger/v1/swagger.json", "MyCo API v1");
+});
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
