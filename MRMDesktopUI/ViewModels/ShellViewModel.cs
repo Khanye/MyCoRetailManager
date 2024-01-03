@@ -43,9 +43,22 @@ namespace MRMDesktopUI.ViewModels
 
         }
 
+        public bool IsLoggedOut
+        {
+            get
+            {
+                return !IsLoggedIn;
+            }
+        }
+
         public async Task UsersManagement()
         {
             await ActivateItemAsync(IoC.Get<UserDisplayViewModel>());
+        }
+
+        public async Task LogIn()
+        {
+            await ActivateItemAsync(IoC.Get<LoginViewModel>());
         }
         public async Task LogOut()
         {
@@ -53,6 +66,7 @@ namespace MRMDesktopUI.ViewModels
             _apiHelper.LogOffUser();
             await ActivateItemAsync(IoC.Get<LoginViewModel>());
             NotifyOfPropertyChange(() => IsLoggedIn);
+            NotifyOfPropertyChange(() => IsLoggedOut);
         }
         public void ExitApplication()
         {
@@ -63,6 +77,7 @@ namespace MRMDesktopUI.ViewModels
         {
             await ActivateItemAsync(IoC.Get<SalesViewModel>(), cancellationToken);
             NotifyOfPropertyChange(() => IsLoggedIn);
+            NotifyOfPropertyChange(() => IsLoggedOut);
         }
     }
 }

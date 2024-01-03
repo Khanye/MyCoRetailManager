@@ -3,6 +3,7 @@ using MRMDataManager.Library.Internal.DataAccess;
 using MRMDataManager.Library.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,18 +14,34 @@ namespace MRMDataManager.Library.DataAccess
     {
         private readonly IProductData _productData;
         private readonly ISqlDataAccess _sql;
+        private readonly IConfiguration _config;
 
-        public SaleData(IProductData productData, ISqlDataAccess sql)
+        public SaleData(IProductData productData, ISqlDataAccess sql,IConfiguration config)
         {
             _productData = productData;
             _sql = sql;
+            _config = config;
+        }
+
+        public decimal GetTaxRate()
+        {
+            string taxRateText = _config.GetValue<string>();//ConfigurationManager.AppSettings["taxRate"];
+            bool IsValidTaxRate = Decimal.TryParse(taxRateText, out decimal output);
+
+            if (IsValidTaxRate == false)
+            {
+                throw new ConfigurationErrorsException("The tax rate is not set up properly");
+            }
+
+            output = output / 100;
+            return output;
         }
         public void SaveSale(SaleModel saleInfo, string cashierId)
         {
             //Make this SOLID/Dry/Better
             // Start filling in the sale detail models we will save to the database
             List<SaleDetailDBModel> details = new List<SaleDetailDBModel>();
-            var taxRate = ConfigHelper.GetTaxRate() / 100;
+            var taxRate = GetTaxRate();
 
             foreach (var item in saleInfo.SaleDetails)
             {
