@@ -37,7 +37,7 @@ namespace MRMApi.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        [Route(" Admin/GetAllUsers")]
+        [Route("Admin/GetAllUsers")]
         public List<ApplicationUserModel> GetAllUsers()
         {
             List<ApplicationUserModel> output = new List<ApplicationUserModel>();

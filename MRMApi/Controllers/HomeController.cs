@@ -25,7 +25,7 @@ namespace MRMApi.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Privacy()
+        public Task<IActionResult> Privacy()
         {
             //string[] roles = { "Admin" , "Cashier" , "Manager" , "Supervisor" };
 
@@ -47,7 +47,7 @@ namespace MRMApi.Controllers
             //    await _userManager.AddToRolesAsync(user,roles );
             //}
 
-            return View();
+            return Task.FromResult<IActionResult>(View());
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

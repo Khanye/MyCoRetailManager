@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Caliburn.Micro;
 using MRMDesktopUI.EventModels;
@@ -20,12 +21,12 @@ namespace MRMDesktopUI.ViewModels
         {           
             _salesVM = salesVM;
             _events = events;
-            _events.Subscribe(this);
+            _events.SubscribeOnPublishedThread(this);
             _user = loggedInUserModel;
             _apiHelper = apiHelper;
             //ActivateItem(_container.GetInstance<LoginViewModel>());
             // Better way 
-            ActivateItem(IoC.Get<LoginViewModel>());
+            ActivateItemAsync(IoC.Get<LoginViewModel>());
         }
         public bool IsLoggedIn
         {
@@ -42,25 +43,31 @@ namespace MRMDesktopUI.ViewModels
 
         }
 
-        public void UsersManagement()
+        public async Task UsersManagement()
         {
-            ActivateItem(IoC.Get<UserDisplayViewModel>());
+            await ActivateItemAsync(IoC.Get<UserDisplayViewModel>());
         }
-        public void LogOut()
+        public async Task LogOut()
         {
             _user.ResetUserModel();
             _apiHelper.LogOffUser();
-            ActivateItem(IoC.Get<LoginViewModel>());
+            await ActivateItemAsync(IoC.Get<LoginViewModel>());
             NotifyOfPropertyChange(() => IsLoggedIn);
         }
         public void ExitApplication()
         {
-            TryClose();
+            TryCloseAsync();
         }
 
-       public  void Handle(LogOnEvent message)
+       //public  void Handle(LogOnEvent message)
+       // {
+       //     ActivateItem(_salesVM);
+       //     NotifyOfPropertyChange(() => IsLoggedIn);
+       // }
+
+        public async Task HandleAsync(LogOnEvent message, CancellationToken cancellationToken)
         {
-            ActivateItem(_salesVM);
+            await ActivateItemAsync(_salesVM,cancellationToken);
             NotifyOfPropertyChange(() => IsLoggedIn);
         }
     }
