@@ -39,7 +39,7 @@ builder.Services.AddAuthentication(options =>
         jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MySecretKeyIsSecretSoDoNotTellPleaseDoNot")),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("Secrets:SecurityKey"))),
             ValidateIssuer  = false,
             ValidateAudience = false,
             ValidateLifetime = true,
