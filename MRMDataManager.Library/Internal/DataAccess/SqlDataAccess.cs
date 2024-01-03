@@ -1,6 +1,7 @@
 ﻿
 using Dapper;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -18,9 +19,12 @@ namespace MRMDataManager.Library.Internal.DataAccess
     public class SqlDataAccess : IDisposable, ISqlDataAccess
     {
         private IConfiguration _config;
-        public SqlDataAccess(IConfiguration config)
+        private readonly ILogger<SqlDataAccess> _logger;
+
+        public SqlDataAccess(IConfiguration config,ILogger<SqlDataAccess> logger)
         {
             _config = config;
+            _logger = logger;
         }
         // Method to get the connection string : Pass in the name of the connection and return a connection string
         public string GetConnectionString(string name)
@@ -120,9 +124,9 @@ namespace MRMDataManager.Library.Internal.DataAccess
                 {
                     CommitTransaction();
                 }
-                catch
+                catch(Exception ex)
                 {
-                    //TODO: Log this issue 
+                    _logger.LogError(ex, "Commit Transaction failed in the dispose method"); 
                 }
             }
 
