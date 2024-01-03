@@ -73,6 +73,7 @@ namespace MRMDesktopUI.ViewModels
             {
                 _selectedUserRole = value;
                 NotifyOfPropertyChange(() => SelectedUserRole);
+                NotifyOfPropertyChange(() => CanRemoveSelectedRole);
             }
         }
 
@@ -84,6 +85,7 @@ namespace MRMDesktopUI.ViewModels
             {
                 _selectedAvailableRole = value;
                 NotifyOfPropertyChange(() => SelectedAvailableRole);
+                NotifyOfPropertyChange(() => CanAddSelectedRole);
             }
         }
 
@@ -154,12 +156,43 @@ namespace MRMDesktopUI.ViewModels
         private async Task LoadRoles()
         {
             var roles = await _userEndPoint.GetAllRoles();
+            AvailableRoles.Clear();
 
             foreach (var role in roles)
             {
                 if (UserRoles.IndexOf(role.Value) < 0)
                 {
                     AvailableRoles.Add(role.Value);
+                }
+            }
+        }
+
+        public bool CanAddSelectedRole
+        {
+          get
+            {
+                if (SelectedUser is null || SelectedAvailableRole is null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
+        public bool CanRemoveSelectedRole
+        {
+            get
+            {
+                if (SelectedUser is null || SelectedUserRole is null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
                 }
             }
         }
