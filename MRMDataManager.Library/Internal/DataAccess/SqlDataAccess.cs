@@ -15,17 +15,17 @@ namespace MRMDataManager.Library.Internal.DataAccess
 {
     // Internal so that it cant be seen by anything outside the Library. Nothing outside thelibrary should be talking to the 
     //database but has to go through the SQLDataAccess class
-    internal class SqlDataAccess : IDisposable
+    public class SqlDataAccess : IDisposable, ISqlDataAccess
     {
         private IConfiguration _config;
         public SqlDataAccess(IConfiguration config)
         {
-            _config = config;  
+            _config = config;
         }
         // Method to get the connection string : Pass in the name of the connection and return a connection string
         public string GetConnectionString(string name)
         {
-           return _config.GetConnectionString(name);
+            return _config.GetConnectionString(name);
         }
 
         public List<T> LoadData<T, U>(string storedProcedure, U parameters, string connectionStringName)
@@ -68,9 +68,9 @@ namespace MRMDataManager.Library.Internal.DataAccess
             string connectionString = GetConnectionString(connectionStringName);
 
             _connection = new SqlConnection(connectionString);
-            _connection.Open(); 
+            _connection.Open();
 
-            _transaction = _connection.BeginTransaction(); 
+            _transaction = _connection.BeginTransaction();
 
             isClosed = false;
         }
@@ -80,17 +80,17 @@ namespace MRMDataManager.Library.Internal.DataAccess
         {
             _connection.Execute(storedProcedure, parameters,
                      commandType: CommandType.StoredProcedure, transaction: _transaction);
-            
+
         }
 
         // Load using the transaction
         public List<T> LoadDataInTransaction<T, U>(string storedProcedure, U parameters)
         {
-           List<T> rows = _connection.Query<T>(storedProcedure, parameters,
-                   commandType: CommandType.StoredProcedure, transaction: _transaction).ToList();
+            List<T> rows = _connection.Query<T>(storedProcedure, parameters,
+                    commandType: CommandType.StoredProcedure, transaction: _transaction).ToList();
 
-           return rows;
-            
+            return rows;
+
         }
 
         private bool isClosed = false;
@@ -126,8 +126,8 @@ namespace MRMDataManager.Library.Internal.DataAccess
                 }
             }
 
-            _transaction  = null;
-            _connection = null ;
+            _transaction = null;
+            _connection = null;
         }
     }
 

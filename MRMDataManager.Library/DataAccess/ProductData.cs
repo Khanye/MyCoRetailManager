@@ -9,30 +9,27 @@ using System.Threading.Tasks;
 
 namespace MRMDataManager.Library.DataAccess
 {
-    public class ProductData
+    public class ProductData : IProductData
     {
-        private readonly IConfiguration _config;
-
-        public ProductData(IConfiguration config)
+        private readonly ISqlDataAccess _sql;
+        public ProductData(ISqlDataAccess sql)
         {
-            _config = config;
+            _sql = sql;
         }
         public List<ProductModel> GetProducts()
         {
-            // Direct Dependancy
-            SqlDataAccess sql = new SqlDataAccess(_config);
+            //// Direct Dependancy
+            //SqlDataAccess sql = new SqlDataAccess(_config);
+            //var output = sql.LoadData<ProductModel, dynamic>("dbo.spProductGet", new { }, "MRMData");
 
-            var output = sql.LoadData<ProductModel, dynamic>("dbo.spProductGet", new {}, "MRMData");
-
+            // Dependancy Injecton
+            var output = _sql.LoadData<ProductModel, dynamic>("dbo.spProductGet", new { }, "MRMData");
             return output;
         }
 
         public ProductModel GetProductById(int productid)
         {
-            SqlDataAccess sql = new SqlDataAccess(_config);
-
-            var output = sql.LoadData<ProductModel, dynamic>("dbo.spProductGetById", new {Id = productid }, "MRMData").FirstOrDefault();
-
+            var output = _sql.LoadData<ProductModel, dynamic>("dbo.spProductGetById", new { Id = productid }, "MRMData").FirstOrDefault();
             return output;
         }
     }

@@ -7,23 +7,17 @@ using System.Collections.Generic;
 
 namespace MRMDataManager.Library.DataAccess
 {
-    public class UserData   
+    public class UserData : IUserData
     {
-        private readonly IConfiguration _config;
+        private readonly ISqlDataAccess _sql;
 
-        public UserData(IConfiguration config)
+        public UserData(ISqlDataAccess sql)
         {
-            _config = config;
+            _sql = sql;
         }
         public List<UserModel> GetUserById(string Id)
         {
-            // Direct Dependancy
-            SqlDataAccess sql = new SqlDataAccess(_config);
-
-            var p = new { Id = Id };
-
-            var output = sql.LoadData<UserModel,dynamic>("dbo.spUserTableLookup", p, "MRMData");
-
+            var output = _sql.LoadData<UserModel, dynamic>("dbo.spUserTableLookup", new {Id}, "MRMData");
             return output;
         }
     }
