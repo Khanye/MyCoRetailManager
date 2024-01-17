@@ -25,7 +25,7 @@ namespace MRMDataManager.Library.DataAccess
 
         public decimal GetTaxRate()
         {
-            string taxRateText = "8.75"; //_config.GetValue<string>("TaxRate"); 
+            string taxRateText = _config.GetValue<string>("TaxRate"); 
             bool IsValidTaxRate = Decimal.TryParse(taxRateText, out decimal output);
 
             if (IsValidTaxRate == false)
