@@ -12,6 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddCors(policy =>
+{
+    policy.AddPolicy("OpenCorsPolicy", opt =>
+    opt.AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyMethod());
+}); 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -71,6 +78,7 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseCors(policyName:"OpenCorsPolicy");
 app.UseStaticFiles();
 
 app.UseRouting();
