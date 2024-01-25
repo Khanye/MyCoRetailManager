@@ -17,8 +17,9 @@ builder.Services.AddCors(policy =>
     policy.AddPolicy("OpenCorsPolicy", opt =>
     opt.AllowAnyOrigin()
     .AllowAnyMethod()
+    .AllowAnyHeader() 
     .AllowAnyMethod());
-}); 
+});
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
