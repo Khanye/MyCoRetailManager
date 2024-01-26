@@ -13,7 +13,7 @@ namespace MRMApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly  ApplicationDbContext _context;
@@ -33,6 +33,55 @@ namespace MRMApi.Controllers
         {
             string userid = User.FindFirstValue(ClaimTypes.NameIdentifier);             
             return _userData.GetUserById(userid).First();
+        }
+
+        public record UserRegistrationModel(
+            string FirstName,
+            string LastName,
+            string EmailAddress,
+            string Password);
+
+        [HttpPost]
+        [Route("Register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register(UserRegistrationModel user)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingUser = await _userManager.FindByEmailAsync(user.EmailAddress);
+                if (existingUser is null)
+                {
+                    IdentityUser newUser = new()
+                    {
+                        Email = user.EmailAddress,
+                        EmailConfirmed = true,
+                        UserName = user.EmailAddress
+                    };
+
+                    IdentityResult result = await _userManager.CreateAsync(newUser, user.Password);
+
+                    if (result.Succeeded)
+                    {
+                        var addedUser = await _userManager.FindByEmailAsync(user.EmailAddress);
+
+                        if (addedUser is null)
+                        {
+                            return BadRequest();
+                        }
+
+                        UserModel u = new()
+                        {
+                            Id = addedUser.Id,
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            EmailAddress = user.EmailAddress
+                        };
+                        _userData.CreateUser(u);
+                        return Ok();
+                    }
+                }
+            }
+            return BadRequest();
         }
 
         [Authorize(Roles = "Admin")]
